@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import time
+import getpass
 
 import configargparse
 from appdirs import user_config_dir
@@ -109,7 +110,7 @@ def save_or_load_credentials():
         while True:
             try:
                 username = input("username: ")
-                password = input("password: ")
+                password = getpass.getpass("password: ")
             except KeyboardInterrupt:
                 print()
                 sys.exit(1)
