@@ -1,7 +1,8 @@
 language: python
 python:
 - '3.4'
-install: pip install -e .
+install: pip install -e .[develop]
+script: py.test
 deploy:
   provider: pypi
   user: dowhilegeek

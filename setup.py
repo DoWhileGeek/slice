@@ -55,6 +55,12 @@ def main():
                 "authentise-services==0.6.0",
                 "ConfigArgParse==0.9.3",
             ],
+            extras_require={
+                'develop': [
+                    'pytest==2.6.4',
+                    'httpretty==0.8.10',
+                    'twine==1.5.0',
+                ]},
             scripts=["bin/slice"]
         )
 
