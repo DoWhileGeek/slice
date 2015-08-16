@@ -1,0 +1,136 @@
+#!/usr/bin/env python
+
+import json
+import os
+import sys
+import time
+
+import configargparse
+from authentise_services.model import Model
+from authentise_services.session import Session
+from authentise_services.slice import Slice
+from authentise_services.slicing_settings import SlicingSettings
+from authentise_services import errors
+
+
+def parse_args():
+    parser = configargparse.ArgParser(default_config_files=[], allow_unknown_config_file_keys=True)
+
+    parser.add('-m', '--model',
+               required=True,
+               help="Path of the model to slice")
+
+    parser.add('-c', '--config',
+               required=True,
+               help="Path of the config file to slice with")
+
+    parser.add('-e', '--engine',
+               required=True,
+               help="slicing engine to use, slic3r or makerbot")
+
+    parser.add('output', help='gcode destination path')
+
+    parsed = vars(parser.parse_args())
+
+    return validate_args(parsed)
+
+
+def validate_args(args):
+    is_valid = True
+
+    slicers = ["slic3r", "makerbot"]
+    if args["engine"].lower() not in slicers:
+        print("engine input must be: {}".format(slicers))
+        is_valid = False
+
+    if not os.path.isfile(args["model"]):
+        print("model file does not exist")
+        is_valid = False
+
+    if not os.path.isfile(args["config"]):
+        print("config file does not exist")
+        is_valid = False
+
+    if not os.path.isdir(os.path.dirname(args["output"])):
+        print("parent directory of output does not exist")
+
+    if not is_valid:
+        print(args)
+        sys.exit(1)
+    else:
+        return args
+
+
+def create_session(username, password):
+    return Session(username=username, password=password)
+
+
+def create_model(path, session):
+    return Model(session=session,
+                 path=path)
+
+
+def create_slice_config(path, engine, session):
+    return SlicingSettings(session=session,
+                           path=path,
+                           engine=engine)
+
+
+def create_slicing_job(model, config, session):
+    return Slice(session=session,
+                 model=model,
+                 slicing_settings=config)
+
+
+def wait_on_slice_job(args, session):
+    model = create_model(args["model"], session)
+
+    config = create_slice_config(args["config"], args["engine"], session)
+
+    slicing_job = create_slicing_job(model, config, session)
+
+    while slicing_job.status != "processed":
+        time.sleep(0.5)
+
+    slicing_job.download(args["output"])
+    print("slce job took {} seconds".format(slicing_job.slice_time / 1000))
+
+
+def save_or_load_credentials():
+    credentials_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+
+    if os.path.isfile(credentials_path):
+        with open(credentials_path) as credentials_file:
+            contents = json.loads(credentials_file.read())
+
+        return create_session(contents["username"], contents["password"])
+    else:
+        while True:
+            try:
+                username = input("username: ")
+                password = input("password: ")
+            except KeyboardInterrupt:
+                print()
+                sys.exit(1)
+
+            try:
+                session = create_session(username, password)
+            except errors.ResourceError:
+                print("credentials invalid")
+            else:
+                with open(credentials_path, "w+") as credentials_file:
+                    credentials_file.write(json.dumps({"username": username,
+                                                       "password": password}))
+                return session
+
+
+def main():
+    args = parse_args()
+
+    session = save_or_load_credentials()
+
+    wait_on_slice_job(args, session)
+
+
+if __name__ == "__main__":
+    main()

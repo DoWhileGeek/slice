@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.4'
+install: pip install -e .[develop]
+deploy:
+  provider: pypi
+  user: dowhilegeek
+  password:
+    secure: YYrEz/x/BCdRTgf8C/km52I5TidkVbC0KO9lxMsPC1NT7CCDf/jVLmVYg9cfkByTHmUiQWgH/9oOOn5Xg5Wui4WlHIZisKjIvg5CNxGi6HXwwkBqT2/6AZf5NJEPhwV7t8CsVza9EtwAR9/e/ieCy8Mgr9EZOQAaou6q5ImI4VNMBXjir4HboSVehNFqc+Q2TJ7n2M7UbaxrcLjT6hOqokSp05V/1xOOen9QzDvob4rgjETrJ8AoYOKwEpv0UWLJkRLdtRw92hhVqF8wfDxvVO9NAifrxQoA65vWuevVXU2swrI+DLTg9VLfJ3GUFY5uGo2E9Wl5DF7p+ysG2IGT9VrR88SkE9vgiILW7HdeNeRBMbRQb6K7BAfdsPRWmJgRd97oBNg5d+UqD4RL1l97FJ5yu2oOYMVN6DA6bsSajF3Z7eU9jqkKziMZ5nDRUqckESkn9HpCgD5ERGILjlQyH+Lso4RvCXRscre6OhzpmXvy44S66fJzdIaGhGaE5mZny9VGRKKtZx4wzGBU0ss/2TiNOD2vQ7pR23XTdhvvW0JUoRHmsd9qprSZbgayDgQ94JzhBO+isWF7HpG0Izdvf8IkjfKtI5Z53IahF1b4emlBt/cMl2f4aiXmG5VAFKR9/vHS9bBNtWhR6Y1CYP39nENyLCytVgI0iwJFtanmld8=
+  on:
+    tags: true
+    repo: DoWhileGeek/slice

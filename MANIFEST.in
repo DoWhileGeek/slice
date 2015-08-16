@@ -1,0 +1,2 @@
+include bin/slice
+include version.json
