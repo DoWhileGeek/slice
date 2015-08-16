@@ -6,6 +6,7 @@ import sys
 import time
 
 import configargparse
+from appdirs import user_config_dir
 from authentise_services import errors
 from authentise_services.model import Model
 from authentise_services.session import Session
@@ -97,10 +98,10 @@ def wait_on_slice_job(args, session):
 
 
 def save_or_load_credentials():
-    credentials_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+    config_path = os.path.join(user_config_dir(appname="slice"), "config.json")
 
-    if os.path.isfile(credentials_path):
-        with open(credentials_path) as credentials_file:
+    if os.path.isfile(config_path):
+        with open(config_path) as credentials_file:
             contents = json.loads(credentials_file.read())
 
         return create_session(contents["username"], contents["password"])
@@ -118,7 +119,8 @@ def save_or_load_credentials():
             except errors.ResourceError:
                 print("credentials invalid")
             else:
-                with open(credentials_path, "w+") as credentials_file:
+                os.makedirs(os.path.dirname(config_path))
+                with open(config_path, "w+") as credentials_file:
                     credentials_file.write(json.dumps({"username": username,
                                                        "password": password}))
                 return session

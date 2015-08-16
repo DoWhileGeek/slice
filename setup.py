@@ -54,6 +54,7 @@ def main():
             install_requires=[
                 "authentise-services==0.6.0",
                 "ConfigArgParse==0.9.3",
+                "appdirs==1.4.0",
             ],
             extras_require={
                 'develop': [
