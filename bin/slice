@@ -6,11 +6,11 @@ import sys
 import time
 
 import configargparse
+from authentise_services import errors
 from authentise_services.model import Model
 from authentise_services.session import Session
 from authentise_services.slice import Slice
 from authentise_services.slicing_settings import SlicingSettings
-from authentise_services import errors
 
 
 def parse_args():
